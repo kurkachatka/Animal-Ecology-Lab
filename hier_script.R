@@ -8,7 +8,7 @@ library(readxl)
 library(gridExtra)
 
 # wczytaj plik
-# hier <- read_excel('C:/Users/marta/OneDrive - University of Gdansk/Dydaktyka/Ekologia zwierz¹t/Biologia/Park Oliwski/Hier_MainDB.xlsx')
+hier <- read_excel('Hier_MainDB.xlsx')
 
 
 #sumowanie agresji

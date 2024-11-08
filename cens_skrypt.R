@@ -11,9 +11,8 @@ library(gridExtra)
 library(factoextra)
 
 
-# ustalanie working directory 
-# cens <- read_excel("C:/Users/MartaWitkowska/OneDrive - University of Gdansk/Dydaktyka/Ekologia zwierz¹t/Biologia/Census_MainDB.xlsx")
-
+# wczytaj plik
+cens <- read_excel('Census_MainDB.xlsx')
 
 # przygotowanie danych ze zliczonymi gatunkami
 
