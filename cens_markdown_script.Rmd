@@ -2,9 +2,8 @@
 title: "Census z wykorzystaniem aplikacji do rozpoznawania glosow ptakow"
 author: "M. Witkowska"
 date: "2024-11-12"
-output:
-  pdf_document: default
-  html_document: default
+output: html_document
+  
 ---
 
 
