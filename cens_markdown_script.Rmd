@@ -1,10 +1,14 @@
+---
+title: "Census z wykorzystaniem aplikacji do rozpoznawania glosow ptakow"
+author: "M. Witkowska"
+date: "2024-11-12"
+output:
+  pdf_document: default
+  html_document: default
+---
 
 
-# install.packages('tidyverse')
-# install.packages('readxl')
-# install.packages('factoextra')
-# install.packages('gridExtra')
-
+```{r include=FALSE}
 library(tidyverse)
 library(readxl)
 library(gridExtra)
@@ -12,9 +16,16 @@ library(factoextra)
 
 
 # wczytaj plik
-cens <- read_excel('Census_MainDB.xlsx')
+cens <- read_excel('C:/Users/marta/OneDrive - University of Gdansk/Dydaktyka/Ekologia zwierząt/Animal-Ecology-Lab/Census_MainDB.xlsx')
 
-# przygotowanie danych ze zliczonymi gatunkami
+
+```
+
+### Przygotowanie danych do analizy
+
+Zliczenie gatunkow dla kazdego punktu
+
+```{r message=FALSE, warning=FALSE}
 
 n_gat <- cens %>% 
   group_by(GRUPA, PUNKT) %>% 
@@ -27,20 +38,34 @@ n_gat <- cens %>%
 
 n_gat <- as.data.frame(n_gat)
 
+```
 
-# przygotowanie danych do PCA, tylko ze zmiennych �rodowiskowych
+Przygotowanie danych do samej PCA - wyselekcjonowanie kolumn zawierajacych zmienne środowiskowe
+
+```{r}
+
+# przygotowanie danych do PCA, tylko ze zmiennych środowiskowych
 
 db_pca <- n_gat %>% select(!GRUPA & !PUNKT & !N_GAT)
 
+
+```
+
+### Analiza PCA
+
+Obliczenie wartosci PCA
+
+```{r}
 # obliczenie PCA
 
 wyniki.pca <- prcomp(db_pca, scale = T)
 
+```
 
-# wizualizacja wariancji objasnionej przez kazde PC
 
-fviz_eig(wyniki.pca)
+Wizualizacja 
 
+```{r}
 # biplot
 
 fviz_pca_var(wyniki.pca,
@@ -48,6 +73,11 @@ fviz_pca_var(wyniki.pca,
              gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
              repel = TRUE)
 
+```
+
+Wyliczenie wartosci PC1 obrazujacej gradient zurbanizowania dla kazdego punktu badawczego.
+
+```{r}
 
 # obliczenie wartosci PC dla kazdego punktu obserwacyjnego
 
@@ -56,6 +86,12 @@ kalk_pca <- predict(wyniki.pca, newdata = n_gat)
 
 n_gat_pca <- bind_cols(n_gat, kalk_pca)
 
+```
+
+
+Wizualizacja zaleznosci bioroznorodnosci od gradientu zurbanizowania i poszczegolnych zmiennych srodowiskowych
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
 
 # zmiany bioroznorodnosci w zaleznosci od cech srodowiska zurbanizowanego
 
@@ -98,25 +134,51 @@ p6 <- n_gat_pca %>%
   theme_classic()
 
 
-p_s <- grid.arrange(p2, p3, p4, p5, p6)
-
-grid.arrange(p1, p_s)
+p_s <- grid.arrange(p2, p3, p4, p5, p6, ncol = 3)
 
 
+```
 
-# Korelacja Spearmana miedzy liczba gatunkow a gradientem zurbanizowania
-# i wszystkimi badanymi zmiennymi srodowiskowymi
+
+
+```{r message=FALSE, warning=FALSE}
+
+grid.arrange(p1, p_s, ncol = 1)
+
+
+```
+
+Korelacja Spearmana dla kazdego porownania
+
+```{r message=FALSE, warning=FALSE}
+
+# korelacja miedzy N_GAT a PC1
 
 cor.test(n_gat_pca$N_GAT, n_gat_pca$PC1, method = 'spearman')
 
+# korelacja miedzy N_GAT a AUTAMI
+
 cor.test(n_gat_pca$N_GAT, n_gat_pca$AUTA, method = 'spearman')
+
+# korelacja miedzy N_GAT a PIESZYMI
 
 cor.test(n_gat_pca$N_GAT, n_gat_pca$PIESI, method = 'spearman')
 
+# korelacja miedzy N_GAT a DRZEWAI
+
 cor.test(n_gat_pca$N_GAT, n_gat_pca$DRZEW, method = 'spearman')
+
+# korelacja miedzy N_GAT a WODA
 
 cor.test(n_gat_pca$N_GAT, n_gat_pca$WODA, method = 'spearman')
 
+# korelacja miedzy N_GAT a ZABUDOWA
+
 cor.test(n_gat_pca$N_GAT, n_gat_pca$BUD, method = 'spearman')
+
+```
+
+
+
 
 
