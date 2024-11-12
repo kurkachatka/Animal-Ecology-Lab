@@ -9,13 +9,13 @@ During the lab, students conduct two field experiments aimed at studying:
 
 List of files:
 2 spreadsheets containing data gathered by students:
-Census_MainDB.xsxl
-Hier_MainDB.xlsx
+- Census_MainDB.xsxl
+- Hier_MainDB.xlsx
 
 2 R scripts:
-cens_script.R
-hier.script.R
+- cens_script.R
+- hier.script.R
 
 2 R Markdown file, for easier interpretation of results for students (unfortunately they are not taught R at this stage)
-cens_markdown_script.Rmd
-hier_markdown_script.Rmd
+- cens_markdown_script.Rmd
+- hier_markdown_script.Rmd
