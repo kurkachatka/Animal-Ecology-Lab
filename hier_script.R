@@ -76,14 +76,14 @@ grid.arrange(f1, f2, ncol = 2)
 podsum1 <- hier %>% 
   filter(!is.na(Plec)) %>% 
   group_by(Plec) %>% 
-  summarise(mediana.AGR = median(AGR, na.rm = F),
-            roz.kwar.AGR = IQR(AGR, na.rm = F),
-            mediana.AGR_M = median(AGR_M, na.rm = F),
-            roz.kwar.AGR_M = IQR(AGR_M, na.rm = F),
-            mediana.AGR_F = median(AGR_F, na.rm = F),
-            roz.kwar.AGR_F = IQR(AGR_F, na.rm = F),
-            mediana.procULE = median(procULE, na.rm = F),
-            roz.kwar.procULE = IQR(procULE, na.rm = F))
+  summarise(mediana.AGR = median(AGR, na.rm = T),
+            roz.kwar.AGR = IQR(AGR, na.rm = T),
+            mediana.AGR_M = median(AGR_M, na.rm = T),
+            roz.kwar.AGR_M = IQR(AGR_M, na.rm = T),
+            mediana.AGR_F = median(AGR_F, na.rm = T),
+            roz.kwar.AGR_F = IQR(AGR_F, na.rm = T),
+            mediana.procULE = median(procULE, na.rm = T),
+            roz.kwar.procULE = IQR(procULE, na.rm = T))
 
 
 View(podsum1)
