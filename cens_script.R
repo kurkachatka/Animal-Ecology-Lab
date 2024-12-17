@@ -28,7 +28,7 @@ n_gat <- cens %>%
 n_gat <- as.data.frame(n_gat)
 
 
-# przygotowanie danych do PCA, tylko ze zmiennych œrodowiskowych
+# przygotowanie danych do PCA, tylko ze zmiennych ?rodowiskowych
 
 db_pca <- n_gat %>% select(!GRUPA & !PUNKT & !N_GAT)
 
@@ -100,7 +100,7 @@ p6 <- n_gat_pca %>%
 
 p_s <- grid.arrange(p2, p3, p4, p5, p6)
 
-grid.arrange(p1, p_s)
+grid.arrange(p1, p_s, ncol = 2)
 
 
 
