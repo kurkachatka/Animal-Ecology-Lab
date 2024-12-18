@@ -15,7 +15,7 @@ library(factoextra)
 
 
 # wczytaj plik
-cens <- read_excel('C:/Users/marta/OneDrive - University of Gdansk/Dydaktyka/Ekologia zwierząt/Animal-Ecology-Lab/Census_MainDB.xlsx')
+cens <- read_excel('C:/Users/MartaWitkowska/OneDrive - University of Gdansk/Dydaktyka/Ekologia zwierząt/Animal-Ecology-Lab/Census_MainDB.xlsx')
 
 
 ```
@@ -95,7 +95,7 @@ Wizualizacja zaleznosci bioroznorodnosci od gradientu zurbanizowania i poszczego
 # zmiany bioroznorodnosci w zaleznosci od cech srodowiska zurbanizowanego
 
 p1 <- n_gat_pca %>% 
-  ggplot(aes(y = N_GAT, x = PC1)) + 
+  ggplot(aes(y = N_GAT, x = -PC1)) + 
   geom_point() +
   geom_smooth(method = 'lm') +
   theme_classic()
@@ -142,7 +142,7 @@ p_s <- grid.arrange(p2, p3, p4, p5, p6, ncol = 3)
 
 ```{r message=FALSE, warning=FALSE}
 
-grid.arrange(p1, p_s, ncol = 1)
+grid.arrange(p1, p_s, ncol = 2)
 
 
 ```

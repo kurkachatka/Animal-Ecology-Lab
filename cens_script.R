@@ -60,7 +60,7 @@ n_gat_pca <- bind_cols(n_gat, kalk_pca)
 # zmiany bioroznorodnosci w zaleznosci od cech srodowiska zurbanizowanego
 
 p1 <- n_gat_pca %>% 
-  ggplot(aes(y = N_GAT, x = PC1)) + 
+  ggplot(aes(y = N_GAT, x = -PC1)) + 
   geom_point() +
   geom_smooth(method = 'lm') +
   theme_classic()
