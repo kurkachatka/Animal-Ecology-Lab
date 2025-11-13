@@ -21,4 +21,5 @@ R Markdown file, for easier interpretation of results for students (unfortunatel
 
 
 Remote Sensing - everything to reproduce satellite data extraction. Created by Pauline Bodson
+
 archive - folder contains old versions of the course
