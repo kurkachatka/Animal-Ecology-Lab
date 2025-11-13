@@ -1,12 +1,15 @@
 library(readxl)
 library(tidyverse)
 library(gridExtra)
+library(FSA)
+
+# --------------- Zaplecze ------------------
+
 setwd("C:/Users/marta/OneDrive - University of Gdansk/Dydaktyka/Ekologia zwierząt/Animal-Ecology-Lab")
 
 
 div.data1 <- read_excel('DiversityDB1.xlsx', sheet = 'Census')
 div.data2 <- read_excel('DiversityDB2.xlsx', sheet = 'Census')
-
 
 
 
@@ -18,9 +21,11 @@ div.data1 <- div.data1 %>% mutate(VEGETATION = VEGETATION/100,
 div.data <-  bind_rows(div.data1, div.data2)
 
 
-# przygotowanie danych ze zliczonymi gatunkami
+# ------------- Związek bioróżnorodności i gradientu zurbanizowania --------------
 
-# stwórz dane zliczające gatunki dla kazdego punktu
+
+# przygotowanie danych ze zliczonymi gatunkami dla każdego punktu
+
 n_spec <- div.data %>% 
   group_by(GRUP, POINT) %>% 
   summarise(N_spec=n_distinct(SPECIES),
@@ -36,7 +41,7 @@ n_spec <- as.data.frame(n_spec)
 spec_plot1 <- n_spec %>% 
   ggplot(aes(y = N_spec, x = VEGETATION)) +
   geom_point(size = 6,alpha = 0.7, position = position_jitter()) +
-  geom_smooth(method = 'lm', color = 'red') +
+  geom_smooth(method = 'lm', color = 'red4', size = 2) +
   theme_classic() +
   theme(axis.title = element_text(size = 15),
         axis.text = element_text(size = 12),
@@ -48,7 +53,7 @@ spec_plot1 <- n_spec %>%
 spec_plot2 <- n_spec %>% 
   ggplot(aes(y = N_spec, x = WATER)) +
   geom_point(size = 6,alpha = 0.7, position = position_jitter(width = 0.01)) +
-  geom_smooth(method = 'lm', color = 'red') +
+  geom_smooth(method = 'lm', color = 'red4', size = 2) +
   theme_classic() +
   theme(axis.title = element_text(size = 15),
         axis.text = element_text(size = 12),
@@ -60,7 +65,7 @@ spec_plot2 <- n_spec %>%
 spec_plot3 <- n_spec %>% 
   ggplot(aes(y = N_spec, x = SEALED)) +
   geom_point(size = 6,alpha = 0.7, position = position_jitter()) +
-  geom_smooth(method = 'lm', color = 'red') +
+  geom_smooth(method = 'lm', color = 'red4', size = 2) +
   theme_classic() +
   theme(axis.title = element_text(size = 15),
         axis.text = element_text(size = 12),
@@ -85,7 +90,6 @@ cor.test(n_spec$N_spec, n_spec$SEALED, method = 'spearman')
 # przygotowanie danych ze zliczonymi rodzinami
 
 
-
 n_fam <- div.data %>% 
   group_by(GRUP, POINT) %>% 
   summarise(N_fam=n_distinct(FAMILY),
@@ -108,7 +112,7 @@ fam_plot1 <- n_fam %>% ggplot(aes(N_fam, x = VEGETATION)) +
        tag = 'A')
 
 fam_plot2 <- n_fam %>% ggplot(aes(N_fam, x = WATER)) +
-  geom_point(size = 6,alpha = 0.7, position = position_jitter()) +
+  geom_point(size = 6,alpha = 0.7, position = position_jitter(width = 0.01)) +
   geom_smooth(method = 'lm', color = 'seagreen', size = 2) +
   theme_classic() +
   theme(axis.title = element_text(size = 15),
@@ -116,9 +120,32 @@ fam_plot2 <- n_fam %>% ggplot(aes(N_fam, x = WATER)) +
         plot.tag = element_text(size = 20)) +
   labs(y = 'Liczba rodzin', x = 'Indeks dostępności wody',
        tag = 'B')
-n_fam %>% ggplot(aes(N_fam, x = SEALED)) +
-  geom_point() +
-  geom_smooth(method = 'lm')
+
+
+fam_plot3 <- n_fam %>% ggplot(aes(N_fam, x = SEALED)) +
+  geom_point(size = 6,alpha = 0.7, position = position_jitter()) +
+  geom_smooth(method = 'lm', color = 'seagreen', size = 2) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 15),
+        axis.text = element_text(size = 12),
+        plot.tag = element_text(size = 20)) +
+  labs(y = 'Liczba rodzin', x = 'Indeks powierzchni uszczelnionej',
+       tag = 'C')
+
+
+grid.arrange(fam_plot1, fam_plot2, fam_plot3, ncol = 3)
+
+
+
+# analiza korelacji Spearmana
+
+cor.test(n_fam$N_fam, n_fam$VEGETATION, method = 'spearman')
+
+cor.test(n_fam$N_fam, n_fam$WATER, method = 'spearman')
+
+cor.test(n_fam$N_fam, n_fam$SEALED, method = 'spearman')
+
+
 
 
 # przygotowanie danych ze zliczonymi rzędami
@@ -133,18 +160,50 @@ n_ord <- div.data %>%
 
 n_ord <- as.data.frame(n_ord)
 
+# Wizualizacja
 
-n_ord %>% ggplot(aes(N_ord, x = VEGETATION)) +
-  geom_point() +
-  geom_smooth(method = 'lm')
+ord_plot1 <- n_ord %>% ggplot(aes(N_ord, x = VEGETATION)) +
+  geom_point(size = 6,alpha = 0.7, position = position_jitter()) +
+  geom_smooth(method = 'lm', color = 'royalblue', size = 2) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 15),
+        axis.text = element_text(size = 12),
+        plot.tag = element_text(size = 20)) +
+  labs(y = 'Liczba rzędow', x = 'Indeks roślinności',
+       tag = 'A')
 
-n_ord %>% ggplot(aes(N_ord, x = WATER)) +
-  geom_point() +
-  geom_smooth(method = 'lm')
 
-n_ord %>% ggplot(aes(N_ord, x = SEALED)) +
-  geom_point() +
-  geom_smooth(method = 'lm')
+ord_plot2 <- n_ord %>% ggplot(aes(N_ord, x = WATER)) +
+  geom_point(size = 6,alpha = 0.7, position = position_jitter(width = 0.01)) +
+  geom_smooth(method = 'lm', color = 'royalblue', size = 2) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 15),
+        axis.text = element_text(size = 12),
+        plot.tag = element_text(size = 20)) +
+  labs(y = 'Liczba rzędow', x = 'Indeks dostępności wody',
+       tag = 'B')
+
+ord_plot3 <- n_ord %>% ggplot(aes(N_ord, x = SEALED)) +
+  geom_point(size = 6,alpha = 0.7, position = position_jitter()) +
+  geom_smooth(method = 'lm', color = 'royalblue', size = 2) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 15),
+        axis.text = element_text(size = 12),
+        plot.tag = element_text(size = 20)) +
+  labs(y = 'Liczba rzędow', x = 'Indeks powierzchni uszczelnionej',
+       tag = 'C')
+
+grid.arrange(ord_plot1, ord_plot2, ord_plot3, ncol = 3)
+
+
+
+# Korelacje Spearmana
+
+cor.test(n_ord$N_ord, n_ord$VEGETATION, method = 'spearman')
+
+cor.test(n_ord$N_ord, n_ord$WATER, method = 'spearman')
+
+cor.test(n_ord$N_ord, n_ord$SEALED, method = 'spearman')
 
 
 
@@ -161,18 +220,50 @@ n_food <- div.data %>%
 n_food <- as.data.frame(n_food)
 
 
-n_food %>% ggplot(aes(N_food, x = VEGETATION)) +
-  geom_point() +
-  geom_smooth(method = 'lm')
 
-n_food %>% ggplot(aes(N_food, x = WATER)) +
-  geom_point() +
-  geom_smooth(method = 'lm')
+# Wizualizacja
 
-n_food %>% ggplot(aes(N_food, x = SEALED)) +
-  geom_point() +
-  geom_smooth(method = 'lm')
+food_plot1 <- n_food %>% ggplot(aes(N_food, x = VEGETATION)) +
+  geom_point(size = 6,alpha = 0.7, position = position_jitter()) +
+  geom_smooth(method = 'lm', color = 'goldenrod2', size = 2) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 15),
+        axis.text = element_text(size = 12),
+        plot.tag = element_text(size = 20)) +
+  labs(y = 'Liczba grup pokarmowych', x = 'Indeks roślinności',
+       tag = 'A')
 
+food_plot2 <- n_food %>% ggplot(aes(N_food, x = WATER)) +
+  geom_point(size = 6,alpha = 0.7, position = position_jitter(width = 0.01)) +
+  geom_smooth(method = 'lm', color = 'goldenrod2', size = 2) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 15),
+        axis.text = element_text(size = 12),
+        plot.tag = element_text(size = 20)) +
+  labs(y = 'Liczba grup pokarmowych', x = 'Indeks dostępności wody',
+       tag = 'B')
+
+food_plot3 <- n_food %>% ggplot(aes(N_food, x = SEALED)) +
+  geom_point(size = 6,alpha = 0.7, position = position_jitter()) +
+  geom_smooth(method = 'lm', color = 'goldenrod2', size = 2) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 15),
+        axis.text = element_text(size = 12),
+        plot.tag = element_text(size = 20)) +
+  labs(y = 'Liczba grup pokarmowych', x = 'Indeks powierzchni uszczelnionej',
+       tag = 'C')
+
+
+grid.arrange(food_plot1, food_plot2, food_plot3, ncol = 3)
+
+
+# Korelacje Spearmana
+
+cor.test(n_food$N_food, n_food$VEGETATION, method = 'spearman')
+
+cor.test(n_food$N_food, n_food$WATER, method = 'spearman')
+
+cor.test(n_food$N_food, n_food$SEALED, method = 'spearman')
 
 
 # przygotowanie danych ze zliczonymi grupami behawioralnymi
@@ -187,73 +278,291 @@ n_behav <- div.data %>%
 
 n_behav <- as.data.frame(n_behav)
 
-
-n_behav %>% ggplot(aes(N_behav, x = VEGETATION)) +
-  geom_point() +
-  geom_smooth(method = 'lm')
-
-n_behav %>% ggplot(aes(N_behav, x = WATER)) +
-  geom_point() +
-  geom_smooth(method = 'lm')
-
-n_behav %>% ggplot(aes(N_behav, x = SEALED)) +
-  geom_point() +
-  geom_smooth(method = 'lm')
+# Wizualizacja
 
 
+behav_plot1 <- n_behav %>% ggplot(aes(N_behav, x = VEGETATION)) +
+  geom_point(size = 6,alpha = 0.7, position = position_jitter()) +
+  geom_smooth(method = 'lm', color = 'deeppink4', size = 2) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 15),
+        axis.text = element_text(size = 12),
+        plot.tag = element_text(size = 20)) +
+  labs(y = 'Liczba grup behawioralnych', x = 'Indeks roślinności',
+       tag = 'A')
 
-# porowanie grup takosnomicznych
+behav_plot2 <- n_behav %>% ggplot(aes(N_behav, x = WATER)) +
+  geom_point(size = 6,alpha = 0.7, position = position_jitter(width = 0.01)) +
+  geom_smooth(method = 'lm', color = 'deeppink4', size = 2) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 15),
+        axis.text = element_text(size = 12),
+        plot.tag = element_text(size = 20)) +
+  labs(y = 'Liczba grup behawioralnych', x = 'Indeks dostępności wody',
+       tag = 'B')
 
-unique(div.data$ORDER)
+behav_plot3 <- n_behav %>% ggplot(aes(N_behav, x = SEALED)) +
+  geom_point(size = 6,alpha = 0.7, position = position_jitter()) +
+  geom_smooth(method = 'lm', color = 'deeppink4', size = 2) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 15),
+        axis.text = element_text(size = 12),
+        plot.tag = element_text(size = 20)) +
+  labs(y = 'Liczba grup behawioralnych', x = 'Indeks powierzchni uszczelnionej',
+       tag = 'C')
 
-div.data %>% 
+grid.arrange(behav_plot1, behav_plot2, behav_plot3, ncol = 3)
+
+
+# Korelacje Spearmana
+
+cor.test(n_behav$N_behav, n_behav$VEGETATION, method = 'spearman')
+
+cor.test(n_behav$N_behav, n_behav$WATER, method = 'spearman')
+
+cor.test(n_behav$N_behav, n_behav$SEALED, method = 'spearman')
+
+
+#-------Porownanie wymagań siedliskowych grup w środowisku zurbanizowanym-------
+
+# Porowanie grup takosnomicznych
+
+div.data %>% group_by(ORDER) %>% summarise(N_GAT = n_distinct(SPECIES),
+                                           MEDIANA_VEGE = median(VEGETATION),
+                                           IQR_VEGE = IQR(VEGETATION),
+                                           MEDIANA_WATER = median(WATER),
+                                           IQR_WATER = IQR(WATER),
+                                           MEDIANA_SEALED = median(SEALED),
+                                           IQR_SEALED = IQR(SEALED))
+
+
+# Wizualizacja
+
+ord_boxplot1 <- div.data %>% 
   ggplot(aes(x = ORDER, y = VEGETATION)) +
-  geom_boxplot()
+  geom_boxplot(size = 0.8, fill = 'royalblue', alpha = 0.5) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 15),
+        axis.text = element_text(size = 12),
+        axis.text.x = element_text(size = 12, angle = 45, hjust = 1),
+        plot.tag = element_text(size = 20)) +
+  labs(y = 'Indeks roślinności', x = 'Rząd',
+       tag = 'A')
 
-div.data %>% 
+ord_boxplot2 <- div.data %>% 
   ggplot(aes(x = ORDER, y = WATER)) +
-  geom_boxplot()
+  geom_boxplot(size = 0.8, fill = 'royalblue', alpha = 0.5) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 15),
+        axis.text = element_text(size = 12),
+        axis.text.x = element_text(size = 12, angle = 45, hjust = 1),
+        plot.tag = element_text(size = 20)) +
+  labs(y = 'Indeks dostępności wody', x = 'Rząd',
+       tag = 'B')
 
-div.data %>% 
+ord_boxplot3 <- div.data %>% 
   ggplot(aes(x = ORDER, y = SEALED)) +
-  geom_boxplot()
+  geom_boxplot(size = 0.8, fill = 'royalblue', alpha = 0.5) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 15),
+        axis.text.y = element_text(size = 12),
+        axis.text.x = element_text(size = 12, angle = 45, hjust = 1),
+        plot.tag = element_text(size = 20)) +
+  labs(y = 'Indeks powierzchni uszczelnionej', x = 'Rząd',
+       tag = 'C')
+
+grid.arrange(ord_boxplot1, ord_boxplot2, ord_boxplot3, ncol = 2)
+
+
+# test Kruskala-Wallisa
+
+kruskal.test(data = div.data, VEGETATION~ORDER)
+
+kruskal.test(data = div.data, WATER~ORDER)
+
+kruskal.test(data = div.data, SEALED~ORDER)
+
+# test post-hoc Dunna
+
+
+dunnTest(data = div.data, VEGETATION~as.factor(ORDER), method = 'bonferroni')
+
+dunnTest(data = div.data, WATER~as.factor(ORDER), method = 'bonferroni')
+
+dunnTest(data = div.data, SEALED~as.factor(ORDER), method = 'bonferroni')
+
 
 
 # porowanie grup pokarmowych
 
-unique(div.data$FOOD)
+div.data %>% group_by(FOOD) %>% summarise(N_GAT = n_distinct(SPECIES),
+                                           MEDIANA_VEGE = median(VEGETATION),
+                                           IQR_VEGE = IQR(VEGETATION),
+                                           MEDIANA_WATER = median(WATER),
+                                           IQR_WATER = IQR(WATER),
+                                           MEDIANA_SEALED = median(SEALED),
+                                           IQR_SEALED = IQR(SEALED))
 
-div.data %>% 
+food_boxplot1 <- div.data %>%
   ggplot(aes(x = FOOD, y = VEGETATION)) +
-  geom_boxplot()
+  geom_boxplot(size = 0.8, fill = 'goldenrod2', alpha = 0.9) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 15),
+        axis.text = element_text(size = 12),
+        axis.text.x = element_text(size = 12, angle = 45, hjust = 1),
+        plot.tag = element_text(size = 20)) +
+  labs(y = 'Indeks roślinności', x = 'Grupa pokarmowa',
+       tag = 'A')
 
-div.data %>% 
+food_boxplot2 <- div.data %>% 
   ggplot(aes(x = FOOD, y = WATER)) +
-  geom_boxplot()
+  geom_boxplot(size = 0.8, fill = 'goldenrod2', alpha = 0.9) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 15),
+        axis.text = element_text(size = 12),
+        axis.text.x = element_text(size = 12, angle = 45, hjust = 1),
+        plot.tag = element_text(size = 20)) +
+  labs(y = 'Indeks dostępności wody', x = 'Grupa pokarmowa',
+       tag = 'B')
 
-div.data %>% 
+food_boxplot3 <- div.data %>% 
   ggplot(aes(x = FOOD, y = SEALED)) +
-  geom_boxplot()
+  geom_boxplot(size = 0.8, fill = 'goldenrod2', alpha = 0.9) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 15),
+        axis.text = element_text(size = 12),
+        axis.text.x = element_text(size = 12, angle = 45, hjust = 1),
+        plot.tag = element_text(size = 20)) +
+  labs(y = 'Indeks powierzchni uszczelnionej', x = 'Grupa pokarmowa',
+       tag = 'C')
 
 
-# porowanie grup behavioralnych
+grid.arrange(food_boxplot1, food_boxplot2, food_boxplot3, ncol = 2)
 
-unique(div.data$BEHAV)
+# test Kruskala-Wallisa
 
-div.data %>% 
+kruskal.test(data = div.data, VEGETATION~FOOD)
+
+kruskal.test(data = div.data, WATER~FOOD)
+
+kruskal.test(data = div.data, SEALED~FOOD)
+
+# test post-hoc Dunna
+
+
+dunnTest(data = div.data, VEGETATION~as.factor(FOOD), method = 'bonferroni')
+
+dunnTest(data = div.data, WATER~as.factor(FOOD), method = 'bonferroni')
+
+dunnTest(data = div.data, SEALED~as.factor(FOOD), method = 'bonferroni')
+
+
+
+# porowanie grup behawioralnych
+
+div.data %>% group_by(BEHAV) %>% summarise(N_GAT = n_distinct(SPECIES),
+                                          MEDIANA_VEGE = median(VEGETATION),
+                                          IQR_VEGE = IQR(VEGETATION),
+                                          MEDIANA_WATER = median(WATER),
+                                          IQR_WATER = IQR(WATER),
+                                          MEDIANA_SEALED = median(SEALED),
+                                          IQR_SEALED = IQR(SEALED))
+
+behav_boxplot1 <- div.data %>% 
   ggplot(aes(x = BEHAV, y = VEGETATION)) +
-  geom_boxplot()
+  geom_boxplot(size = 0.8, fill = 'deeppink4', alpha = 0.5) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 15),
+        axis.text = element_text(size = 12),
+        axis.text.x = element_text(size = 12, angle = 45, hjust = 1),
+        plot.tag = element_text(size = 20)) +
+  labs(y = 'Indeks roślinności', x = 'Grupa behawioralna',
+       tag = 'A')
 
-div.data %>% 
+behav_boxplot2 <- div.data %>% 
   ggplot(aes(x = BEHAV, y = WATER)) +
-  geom_boxplot()
+  geom_boxplot(size = 0.8, fill = 'deeppink4', alpha = 0.5) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 15),
+        axis.text = element_text(size = 12),
+        axis.text.x = element_text(size = 12, angle = 45, hjust = 1),
+        plot.tag = element_text(size = 20)) +
+  labs(y = 'Indeks dostępności wody', x = 'Grupa behawioralna',
+       tag = 'B')
 
-div.data %>% 
+behav_boxplot3 <- div.data %>% 
   ggplot(aes(x = BEHAV, y = SEALED)) +
-  geom_boxplot()
+  geom_boxplot(size = 0.8, fill = 'deeppink4', alpha = 0.5) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 15),
+        axis.text = element_text(size = 12),
+        axis.text.x = element_text(size = 12, angle = 45, hjust = 1),
+        plot.tag = element_text(size = 20)) +
+  labs(y = 'Indeks powierzchni uszczelnionej', x = 'Grupa behawioralna',
+       tag = 'C')
+
+grid.arrange(behav_boxplot1, behav_boxplot2, behav_boxplot3, ncol = 2)
+
+
+# lepsze wykresy
+
+behav_boxplot1.1 <- div.data %>% filter(BEHAV != 'Aerial Forager' & BEHAV != 'Aerial insectivore') %>% 
+  ggplot(aes(x = BEHAV, y = VEGETATION)) +
+  geom_boxplot(size = 0.8, fill = 'deeppink4', alpha = 0.5) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 15),
+        axis.text = element_text(size = 12),
+        axis.text.x = element_text(size = 12, angle = 45, hjust = 1),
+        plot.tag = element_text(size = 20)) +
+  labs(y = 'Indeks roślinności', x = 'Grupa behawioralna',
+       tag = 'A')
+
+behav_boxplot2.1 <- div.data %>% filter(BEHAV != 'Aerial Forager' & BEHAV != 'Aerial insectivore') %>% 
+  ggplot(aes(x = BEHAV, y = WATER)) +
+  geom_boxplot(size = 0.8, fill = 'deeppink4', alpha = 0.5) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 15),
+        axis.text = element_text(size = 12),
+        axis.text.x = element_text(size = 12, angle = 45, hjust = 1),
+        plot.tag = element_text(size = 20)) +
+  labs(y = 'Indeks dostępności wody', x = 'Grupa behawioralna',
+       tag = 'B')
+
+behav_boxplot3.1 <- div.data %>% filter(BEHAV != 'Aerial Forager' & BEHAV != 'Aerial insectivore') %>% 
+  ggplot(aes(x = BEHAV, y = SEALED)) +
+  geom_boxplot(size = 0.8, fill = 'deeppink4', alpha = 0.5) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 15),
+        axis.text = element_text(size = 12),
+        axis.text.x = element_text(size = 12, angle = 45, hjust = 1),
+        plot.tag = element_text(size = 20)) +
+  labs(y = 'Indeks powierzchni uszczelnionej', x = 'Grupa behawioralna',
+       tag = 'C')
+
+grid.arrange(behav_boxplot1.1, behav_boxplot2.1, behav_boxplot3.1, ncol = 2)
 
 
 
+# test Kruskala-Wallisa
+
+div.data_reduced <- div.data %>%
+  filter(BEHAV != 'Aerial Forager' & BEHAV != 'Aerial insectivore')
+
+kruskal.test(data = div.data_reduced, VEGETATION~BEHAV)
+
+kruskal.test(data = div.data_reduced, WATER~BEHAV)
+
+kruskal.test(data = div.data_reduced, SEALED~BEHAV)
+
+
+# test post-hoc Dunna
+
+
+dunnTest(data = div.data_reduced, VEGETATION~as.factor(BEHAV), method = 'bonferroni')
+
+dunnTest(data = div.data_reduced, WATER~as.factor(BEHAV), method = 'bonferroni')
+
+dunnTest(data = div.data_reduced, SEALED~as.factor(BEHAV), method = 'bonferroni')
 
 
 
