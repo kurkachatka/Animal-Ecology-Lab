@@ -144,6 +144,53 @@ n_behav %>% ggplot(aes(N_behav, x = SEALED)) +
 
 # porowanie grup takosnomicznych
 
+unique(div.data$ORDER)
+
+div.data %>% 
+  ggplot(aes(x = ORDER, y = VEGETATION)) +
+  geom_boxplot()
+
+div.data %>% 
+  ggplot(aes(x = ORDER, y = WATER)) +
+  geom_boxplot()
+
+div.data %>% 
+  ggplot(aes(x = ORDER, y = SEALED)) +
+  geom_boxplot()
+
+
+# porowanie grup pokarmowych
+
+unique(div.data$FOOD)
+
+div.data %>% 
+  ggplot(aes(x = FOOD, y = VEGETATION)) +
+  geom_boxplot()
+
+div.data %>% 
+  ggplot(aes(x = FOOD, y = WATER)) +
+  geom_boxplot()
+
+div.data %>% 
+  ggplot(aes(x = FOOD, y = SEALED)) +
+  geom_boxplot()
+
+
+# porowanie grup behavioralnych
+
+unique(div.data$BEHAV)
+
+div.data %>% 
+  ggplot(aes(x = BEHAV, y = VEGETATION)) +
+  geom_boxplot()
+
+div.data %>% 
+  ggplot(aes(x = BEHAV, y = WATER)) +
+  geom_boxplot()
+
+div.data %>% 
+  ggplot(aes(x = BEHAV, y = SEALED)) +
+  geom_boxplot()
 
 
 
