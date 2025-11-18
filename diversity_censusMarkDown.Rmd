@@ -395,21 +395,11 @@ ord_boxplot1 <- div.data %>%
         axis.text = element_text(size = 11),
         axis.text.x = element_text(size = 11, angle = 45, hjust = 1),
         plot.tag = element_text(size = 19)) +
-  labs(y = 'Indeks roślinności', x = 'RzÄ…d',
+  labs(y = 'Indeks roślinności', x = 'Rząd',
        tag = 'A')
 
-ord_boxplot2 <- div.data %>% 
-  ggplot(aes(x = ORDER, y = WATER)) +
-  geom_boxplot(size = 0.8, fill = 'royalblue', alpha = 0.5) +
-  theme_classic() +
-  theme(axis.title = element_text(size = 14),
-        axis.text = element_text(size = 11),
-        axis.text.x = element_text(size = 11, angle = 45, hjust = 1),
-        plot.tag = element_text(size = 19)) +
-  labs(y = 'Indeks dost. wody', x = 'RzÄ…d',
-       tag = 'B')
 
-ord_boxplot3 <- div.data %>% 
+ord_boxplot2 <- div.data %>% 
   ggplot(aes(x = ORDER, y = SEALED)) +
   geom_boxplot(size = 0.8, fill = 'royalblue', alpha = 0.5) +
   theme_classic() +
@@ -417,8 +407,20 @@ ord_boxplot3 <- div.data %>%
         axis.text.y = element_text(size = 11),
         axis.text.x = element_text(size = 11, angle = 45, hjust = 1),
         plot.tag = element_text(size = 19)) +
-  labs(y = 'Indeks pow. uszczelnionej', x = 'RzÄ…d',
+  labs(y = 'Indeks pow. uszczelnionej', x = 'Rząd',
+       tag = 'B')
+
+ord_boxplot3 <- div.data %>% 
+  ggplot(aes(x = ORDER, y = WATER)) +
+  geom_boxplot(size = 0.8, fill = 'royalblue', alpha = 0.5) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 14),
+        axis.text = element_text(size = 11),
+        axis.text.x = element_text(size = 11, angle = 45, hjust = 1),
+        plot.tag = element_text(size = 19)) +
+  labs(y = 'Indeks dost. wody', x = 'Rząd',
        tag = 'C')
+
 
 grid.arrange(ord_boxplot1, ord_boxplot2, ord_boxplot3, ncol = 2)
 
@@ -472,17 +474,6 @@ food_boxplot1 <- div.data %>%
        tag = 'A')
 
 food_boxplot2 <- div.data %>% 
-  ggplot(aes(x = FOOD, y = WATER)) +
-  geom_boxplot(size = 0.8, fill = 'goldenrod2', alpha = 0.9) +
-  theme_classic() +
-  theme(axis.title = element_text(size = 14),
-        axis.text = element_text(size = 11),
-        axis.text.x = element_text(size = 11, angle = 45, hjust = 1),
-        plot.tag = element_text(size = 19)) +
-  labs(y = 'Indeks dost. wody', x = 'Grupa pokarmowa',
-       tag = 'B')
-
-food_boxplot3 <- div.data %>% 
   ggplot(aes(x = FOOD, y = SEALED)) +
   geom_boxplot(size = 0.8, fill = 'goldenrod2', alpha = 0.9) +
   theme_classic() +
@@ -491,6 +482,17 @@ food_boxplot3 <- div.data %>%
         axis.text.x = element_text(size = 11, angle = 45, hjust = 1),
         plot.tag = element_text(size = 19)) +
   labs(y = 'Indeks pow. uszczelnionej', x = 'Grupa pokarmowa',
+       tag = 'B')
+
+food_boxplot3 <- div.data %>% 
+  ggplot(aes(x = FOOD, y = WATER)) +
+  geom_boxplot(size = 0.8, fill = 'goldenrod2', alpha = 0.9) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 14),
+        axis.text = element_text(size = 11),
+        axis.text.x = element_text(size = 11, angle = 45, hjust = 1),
+        plot.tag = element_text(size = 19)) +
+  labs(y = 'Indeks dost. wody', x = 'Grupa pokarmowa',
        tag = 'C')
 
 
@@ -544,18 +546,8 @@ behav_boxplot1 <- div.data %>%
   labs(y = 'Indeks roślinności', x = 'Grupa behawioralna',
        tag = 'A')
 
-behav_boxplot2 <- div.data %>% 
-  ggplot(aes(x = BEHAV, y = WATER)) +
-  geom_boxplot(size = 0.8, fill = 'deeppink4', alpha = 0.5) +
-  theme_classic() +
-  theme(axis.title = element_text(size = 14),
-        axis.text = element_text(size = 11),
-        axis.text.x = element_text(size = 11, angle = 45, hjust = 1),
-        plot.tag = element_text(size = 19)) +
-  labs(y = 'Indeks dost. wody', x = 'Grupa behawioralna',
-       tag = 'B')
 
-behav_boxplot3 <- div.data %>% 
+behav_boxplot2 <- div.data %>% 
   ggplot(aes(x = BEHAV, y = SEALED)) +
   geom_boxplot(size = 0.8, fill = 'deeppink4', alpha = 0.5) +
   theme_classic() +
@@ -564,7 +556,19 @@ behav_boxplot3 <- div.data %>%
         axis.text.x = element_text(size = 11, angle = 45, hjust = 1),
         plot.tag = element_text(size = 19)) +
   labs(y = 'Indeks pow. uszczelnionej', x = 'Grupa behawioralna',
+       tag = 'B')
+
+behav_boxplot3 <- div.data %>% 
+  ggplot(aes(x = BEHAV, y = WATER)) +
+  geom_boxplot(size = 0.8, fill = 'deeppink4', alpha = 0.5) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 14),
+        axis.text = element_text(size = 11),
+        axis.text.x = element_text(size = 11, angle = 45, hjust = 1),
+        plot.tag = element_text(size = 19)) +
+  labs(y = 'Indeks dost. wody', x = 'Grupa behawioralna',
        tag = 'C')
+
 
 grid.arrange(behav_boxplot1, behav_boxplot2, behav_boxplot3, ncol = 2)
 
@@ -583,17 +587,6 @@ behav_boxplot1.1 <- div.data %>% filter(BEHAV != 'Aerial Forager' & BEHAV != 'Ae
        tag = 'A')
 
 behav_boxplot2.1 <- div.data %>% filter(BEHAV != 'Aerial Forager' & BEHAV != 'Aerial insectivore') %>% 
-  ggplot(aes(x = BEHAV, y = WATER)) +
-  geom_boxplot(size = 0.8, fill = 'deeppink4', alpha = 0.5) +
-  theme_classic() +
-  theme(axis.title = element_text(size = 14),
-        axis.text = element_text(size = 11),
-        axis.text.x = element_text(size = 11, angle = 45, hjust = 1),
-        plot.tag = element_text(size = 19)) +
-  labs(y = 'Indeks dost. wody', x = 'Grupa behawioralna',
-       tag = 'B')
-
-behav_boxplot3.1 <- div.data %>% filter(BEHAV != 'Aerial Forager' & BEHAV != 'Aerial insectivore') %>% 
   ggplot(aes(x = BEHAV, y = SEALED)) +
   geom_boxplot(size = 0.8, fill = 'deeppink4', alpha = 0.5) +
   theme_classic() +
@@ -602,6 +595,17 @@ behav_boxplot3.1 <- div.data %>% filter(BEHAV != 'Aerial Forager' & BEHAV != 'Ae
         axis.text.x = element_text(size = 11, angle = 45, hjust = 1),
         plot.tag = element_text(size = 19)) +
   labs(y = 'Indeks pow. uszczelnionej', x = 'Grupa behawioralna',
+       tag = 'B')
+
+behav_boxplot3.1 <- div.data %>% filter(BEHAV != 'Aerial Forager' & BEHAV != 'Aerial insectivore') %>% 
+  ggplot(aes(x = BEHAV, y = WATER)) +
+  geom_boxplot(size = 0.8, fill = 'deeppink4', alpha = 0.5) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 14),
+        axis.text = element_text(size = 11),
+        axis.text.x = element_text(size = 11, angle = 45, hjust = 1),
+        plot.tag = element_text(size = 19)) +
+  labs(y = 'Indeks dost. wody', x = 'Grupa behawioralna',
        tag = 'C')
 
 grid.arrange(behav_boxplot1.1, behav_boxplot2.1, behav_boxplot3.1, ncol = 2)
@@ -638,9 +642,4 @@ dunnTest(data = div.data_reduced, SEALED~as.factor(BEHAV), method = 'bonferroni'
 ```
 
 
-
-
-
-
-```
 
