@@ -1,0 +1,68 @@
+---
+title: "Teledetekcja"
+author: "MWT"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = F, message = F)
+```
+
+
+```{r}
+## Download the libraries
+library(tidyverse) ## needed to clean the data set
+library(readxl) ## needed to open xlsx file
+library(raster) ## needed to import the .tif layer
+library(terra)  ## raster handling (fast), prefer over raster package
+library(sf) ## needed to convert data from degrees to meters
+library(dplyr) ## needed to manipulate tables
+library(ggplot2) ## needed to create graph
+
+setwd("C:/Users/MartaWitkowska/OneDrive - University of Gdansk/Dydaktyka/Ekologia zwierząt/Animal-Ecology-Lab/Remote Sensing")
+
+
+```
+
+
+```{r include=FALSE}
+Oliwa_landscape <- read.csv("Oliwa_landscape.csv",sep=",",dec=".",h=T)
+Coordinates <- read_excel("Coordinates.xlsx")
+
+raster_crs <- readRDS("C:/Users/MartaWitkowska/OneDrive - University of Gdansk/Dydaktyka/Ekologia zwierząt/Animal-Ecology-Lab/Remote Sensing/raster_crs.RData")
+
+Coordinates_Group_sf <- st_as_sf(Coordinates, coords = c("Longitude", "Latitude"),crs=4326)
+
+Coordinates_Group_laea <- st_transform(Coordinates_Group_sf, crs = st_crs(raster_crs))
+Coordinates_Group_laea
+crs(Coordinates_Group_laea, proj=T)
+
+buffer_m <- 20
+buffers_laea <- st_buffer(Coordinates_Group_laea, dist = buffer_m)
+crs(buffers_laea,proj=T) 
+
+```
+
+
+```{r}
+ggplot() +
+  geom_raster(data = Oliwa_landscape, aes(x = x, y = y, fill = landcover)) +
+  scale_fill_manual(name = "landcover", values = c(
+    "Sealed"="#FF0000",
+    "Forest"="#339900",
+    "Bush"="#FFCC00",
+    "Grass"="#99FF00",
+    "Low vegetation"="#999999",
+    "Water"="#3399FF")) +
+  geom_sf(data = buffers_laea, fill = "#FFFFFF", color = "darkblue") +
+  geom_sf(data = Coordinates_Group_laea, aes(color = as.factor(Group)), size = 1) +
+  coord_sf() +
+  theme_minimal() +
+  labs(title = "Oliwa Landscape with Buffers and Coordinates") +
+  theme(legend.position = "right")
+
+
+
+```
+
+
