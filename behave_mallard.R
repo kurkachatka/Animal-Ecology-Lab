@@ -75,13 +75,15 @@ bhv.count <- bhv.count %>%
 # porowanie dwoch plci 
 
 pb1 <- bhv.count %>% ggplot(aes(x = Sex, y = sum_AGR)) +
-  geom_boxplot(outlier.shape = NA) +
+  geom_boxplot(aes(fill = Sex), outlier.shape = NA) +
   coord_cartesian(ylim = c(0, 0.0035)) +
+  labs(y = 'Suma zachowañ agresywnych', x = 'P³eæ') +
   theme_classic()
 
 pb2 <- bhv.count %>% ggplot(aes(x = Sex, y = sum_SUB)) +
-  geom_boxplot(outlier.shape = NA) +
+  geom_boxplot(aes(fill = Sex), outlier.shape = NA) +
   coord_cartesian(ylim = c(0, 0.0035)) +
+  labs(y = 'Suma zachowañ uleg³ych', x = 'P³eæ') +
   theme_classic()
 
 grid.arrange(pb1, pb2, nrow = 1)
@@ -90,18 +92,25 @@ wilcox.test(data = bhv.count, sum_AGR ~ Sex)
 wilcox.test(data = bhv.count, sum_SUB ~ Sex)
 
 
-bhv.count %>% ggplot(aes(x = Sex, y = FOOD)) +
-  geom_boxplot(outlier.shape = NA) +
+pf1 <- bhv.count %>% ggplot(aes(x = Sex, y = FOOD)) +
+  geom_boxplot(aes(fill = Sex), outlier.shape = NA) +
   coord_cartesian(ylim = c(0, 45)) +
+  labs(y = 'Liczba aktów pobierania pokarmu', x = 'P³eæ') +
   theme_classic()
+
+
+
+pf2 <- bhv.count %>% ggplot(aes(x = sum_AGR, y = prop_FOOD)) +
+  geom_point(aes(color = Sex), size = 4, alpha = 0.7) +
+  geom_smooth(method = 'lm', color = 'black', linewidth = 1.5) + 
+  labs(y = 'Liczba aktów pobierania pokarmu', x = 'Suma zachowañ agresywnych') +
+  theme_classic()
+
+
+grid.arrange(pf1, pf2, ncol = 2)
+
 
 wilcox.test(data = bhv.count, FOOD ~ Sex)
-
-bhv.count %>% ggplot(aes(x = sum_AGR, y = prop_FOOD)) +
-  geom_point() +
-  geom_smooth(method = 'lm') + 
-  theme_classic()
-
 
 cor.test(bhv.count$FOOD, bhv.count$sum_AGR)
 
