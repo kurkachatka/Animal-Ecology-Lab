@@ -1,0 +1,112 @@
+---
+title: "Zachowania zwiazane z konkurencja w zimujacym stadzie krzyzowek"
+author: "MWT"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = F, message = F)
+```
+
+```{r}
+# zalecze
+
+library(tidyverse)
+library(readxl)
+library(gridExtra)
+
+bhv <- read_excel('BehaveDB.xlsx')
+
+bhv$Behav <- factor(bhv$Behav,
+                   levels = c("FOOD", "OOF", "AGR_M", "AGR_F", 'SUB_M',
+                              'SUB_F'))
+
+```
+
+```{r}
+# zliczanie zachowań
+
+bhv.count <- bhv %>% 
+  count(ID, Behav) %>% 
+  pivot_wider(names_from = Behav,
+              values_from = n,
+              values_fill = 0) %>% 
+  mutate(Sex = substr(ID, 1, 1))
+
+
+
+bhv.oof <- bhv %>% group_by(ID) %>% 
+  summarise(Last_Frame = max(Frame))
+
+# towrzenie zmiennych o proporcji
+
+bhv.count <- bhv.count %>%
+  left_join(bhv.oof, by = 'ID') %>% 
+  select(-OOF) %>% 
+  mutate(prop_FOOD = FOOD/Last_Frame,
+         prop_AGR_M = AGR_M/Last_Frame,
+         prop_AGR_F = AGR_F/Last_Frame,
+         prop_SUB_M = SUB_M/Last_Frame,
+         prop_SUB_F = SUB_F/Last_Frame,
+         sum_AGR = (AGR_M + AGR_F)/Last_Frame,
+         sum_SUB = (SUB_M + SUB_F)/Last_Frame,
+         sum_BEH = FOOD + AGR_M + AGR_F + SUB_M + SUB_F) %>% 
+  filter(sum_BEH != 0)
+
+```
+
+```{r}
+# porownanie plci pod wzgledem zachowan
+
+pb1 <- bhv.count %>% ggplot(aes(x = Sex, y = sum_AGR)) +
+  geom_boxplot(aes(fill = Sex), outlier.shape = NA) +
+  coord_cartesian(ylim = c(0, 0.0035)) +
+  labs(y = 'Suma zachowań agresywnych', x = 'Płeć') +
+  theme_classic()
+
+pb2 <- bhv.count %>% ggplot(aes(x = Sex, y = sum_SUB)) +
+  geom_boxplot(aes(fill = Sex), outlier.shape = NA) +
+  coord_cartesian(ylim = c(0, 0.0035)) +
+  labs(y = 'Suma zachowań uległych', x = 'Płeć') +
+  theme_classic()
+
+grid.arrange(pb1, pb2, nrow = 1)
+
+wilcox.test(data = bhv.count, sum_AGR ~ Sex)
+wilcox.test(data = bhv.count, sum_SUB ~ Sex)
+
+
+```
+
+```{r}
+
+# porownanie plci pod wzgledem aktow zjadania + korelacja z agresja
+
+
+pf1 <- bhv.count %>% ggplot(aes(x = Sex, y = FOOD)) +
+  geom_boxplot(aes(fill = Sex), outlier.shape = NA) +
+  coord_cartesian(ylim = c(0, 45)) +
+  labs(y = 'Liczba aktów pobierania pokarmu', x = 'Płeć') +
+  theme_classic()
+
+
+
+pf2 <- bhv.count %>% ggplot(aes(x = sum_AGR, y = prop_FOOD)) +
+  geom_point(aes(color = Sex), size = 4, alpha = 0.7) +
+  geom_smooth(method = 'lm', color = 'black', linewidth = 1.5) + 
+  ylim(0, 0.02) +
+  xlim(0, 0.004) +
+  labs(y = 'Liczba aktów pobierania pokarmu', x = 'Suma zachowań agresywnych') +
+  theme_classic()
+
+
+grid.arrange(pf1, pf2, ncol = 2)
+
+
+wilcox.test(data = bhv.count, FOOD ~ Sex)
+
+cor.test(bhv.count$FOOD, bhv.count$sum_AGR)
+
+
+```
+
