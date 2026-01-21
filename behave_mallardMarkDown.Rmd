@@ -105,7 +105,8 @@ grid.arrange(pf1, pf2, ncol = 2)
 
 wilcox.test(data = bhv.count, FOOD ~ Sex)
 
-cor.test(bhv.count$FOOD, bhv.count$sum_AGR)
+cor.test(bhv.count$FOOD, bhv.count$sum_AGR,
+         method = 'spearman')
 
 
 ```
