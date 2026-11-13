@@ -1,12 +1,19 @@
 
+# potrzebne pakiety
+
 library(tidyverse)
 library(readxl)
 library(gridExtra)
 
+
+# ustaw WD
+
 setwd("C:/Users/marta/OneDrive - University of Gdansk/Dydaktyka/Ekologia zwierz¹t/Animal-Ecology-Lab")
 
+# wgraj i sprawdz dane
 
-bhv_vid <- read_excel('BehaveDB.xlsx')
+
+bhv_vid <- read_excel('BehaveDB_vid.xlsx')
 bhv_real <- read_excel('BehaveDB_real.xlsx')
 
 str(bhv_vid)
