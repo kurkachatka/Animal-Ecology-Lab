@@ -1,7 +1,11 @@
 ---
 title: "Konkurencja w zimującym stadzie krzyżówek"
 author: "MWT"
-output: html_document
+lang: pl-PL
+output:
+  html_document: default
+  pdf_document:
+    latex_engine: xelatex
 ---
 
 ```{r setup, include=FALSE}
