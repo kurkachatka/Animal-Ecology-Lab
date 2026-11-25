@@ -1,5 +1,5 @@
 ---
-title: "Zachowania zwiazane z konkurencja w zimujacym stadzie krzyzowek"
+title: "Konkurencja w zimującym stadzie krzyżówek"
 author: "MWT"
 output: html_document
 ---
@@ -8,72 +8,132 @@ output: html_document
 knitr::opts_chunk$set(warning = F, message = F)
 ```
 
-```{r}
-# zalecze
+```{r include=FALSE}
+# zaplecze
 
 library(tidyverse)
 library(readxl)
 library(gridExtra)
 
-bhv <- read_excel('BehaveDB.xlsx')
+bhv_vid <- read_excel('BehaveDB_vid.xlsx')
+bhv_real <- read_excel('BehaveDB_real.xlsx')
 
-bhv$Behav <- factor(bhv$Behav,
+bhv_vid <- bhv_vid %>% filter(Year == '26_27')
+
+bhv_vid$Behav <- factor(bhv_vid$Behav,
                    levels = c("FOOD", "OOF", "AGR_M", "AGR_F", 'SUB_M',
                               'SUB_F'))
 
 ```
 
-```{r}
-# zliczanie zachowań
+```{r include=FALSE}
 
-bhv.count <- bhv %>% 
-  count(ID, Behav) %>% 
+# zlicz zachowania
+
+
+bhv.count_vid <- bhv_vid %>% 
+  count(ID, Behav, Method) %>% 
   pivot_wider(names_from = Behav,
               values_from = n,
               values_fill = 0) %>% 
-  mutate(Sex = substr(ID, 1, 1))
+  mutate(Sex = substr(ID, 1, 1)) %>% 
+  arrange(ID)
 
 
+# wyciagnij ostatnia klatke
+# zmien na minuty: 20klatek - 1 s
 
-bhv.oof <- bhv %>% group_by(ID) %>% 
-  summarise(Last_Frame = max(Frame))
+bhv.oof <- bhv_vid %>% group_by(ID) %>% 
+  summarise(Last_Frame = max(Frame)) %>% 
+  mutate(Obsrv_time = (Last_Frame/20)/60)
 
-# towrzenie zmiennych o proporcji
 
-bhv.count <- bhv.count %>%
-  left_join(bhv.oof, by = 'ID') %>% 
+# zlacz 
+
+bhv.count_vid <- bhv.count_vid %>% left_join(bhv.oof, by = 'ID')
+
+
+# wylicz proporcje i sumy dla wideo
+
+
+bhv.count_vid <- bhv.count_vid %>%
   select(-OOF) %>% 
-  mutate(prop_FOOD = FOOD/Last_Frame,
-         prop_AGR_M = AGR_M/Last_Frame,
-         prop_AGR_F = AGR_F/Last_Frame,
-         prop_SUB_M = SUB_M/Last_Frame,
-         prop_SUB_F = SUB_F/Last_Frame,
-         sum_AGR = (AGR_M + AGR_F)/Last_Frame,
-         sum_SUB = (SUB_M + SUB_F)/Last_Frame,
+  mutate(prop_FOOD = FOOD/Obsrv_time,
+         prop_AGR_M = AGR_M/Obsrv_time,
+         prop_AGR_F = AGR_F/Obsrv_time,
+         prop_SUB_M = SUB_M/Obsrv_time,
+         prop_SUB_F = SUB_F/Obsrv_time,
+         sum_AGR = (AGR_M + AGR_F)/Obsrv_time,
+         sum_SUB = (SUB_M + SUB_F)/Obsrv_time,
          sum_BEH = FOOD + AGR_M + AGR_F + SUB_M + SUB_F) %>% 
   filter(sum_BEH != 0)
+
+
+# wylicz proporcje i sumy dla obserwacji w realu
+
+bhv.count_real <- bhv_real %>%
+  mutate(prop_FOOD = FOOD/Obsrv_time,
+         prop_AGR_M = AGR_M/Obsrv_time,
+         prop_AGR_F = AGR_F/Obsrv_time,
+         prop_SUB_M = SUB_M/Obsrv_time,
+         prop_SUB_F = SUB_F/Obsrv_time,
+         sum_AGR = (AGR_M + AGR_F)/Obsrv_time,
+         sum_SUB = (SUB_M + SUB_F)/Obsrv_time,
+         sum_BEH = FOOD + AGR_M + AGR_F + SUB_M + SUB_F) %>% 
+  filter(sum_BEH != 0)
+
+
+# zlacz obie ramki danych
+
+
+bhv <- bind_rows(bhv.count_vid, bhv.count_real)
+
+
 
 ```
 
 ```{r}
 # porownanie plci pod wzgledem zachowan
 
-pb1 <- bhv.count %>% ggplot(aes(x = Sex, y = sum_AGR)) +
-  geom_boxplot(aes(fill = Sex), outlier.shape = NA) +
-  coord_cartesian(ylim = c(0, 0.0035)) +
-  labs(y = 'Suma zachowań agresywnych', x = 'Płeć') +
-  theme_classic()
 
-pb2 <- bhv.count %>% ggplot(aes(x = Sex, y = sum_SUB)) +
+pb1 <- bhv %>% ggplot(aes(x = Sex, y = sum_AGR)) +
   geom_boxplot(aes(fill = Sex), outlier.shape = NA) +
-  coord_cartesian(ylim = c(0, 0.0035)) +
+  coord_cartesian(ylim = c(0, 3)) +
+  labs(y = 'Suma zachowań agresywnych', x = 'Płeć') +
+  theme_classic() +
+  facet_wrap(~Method)
+
+pb2 <- bhv %>% ggplot(aes(x = Sex, y = sum_SUB)) +
+  geom_boxplot(aes(fill = Sex), outlier.shape = NA) +
+  coord_cartesian(ylim = c(0, 3)) +
   labs(y = 'Suma zachowań uległych', x = 'Płeć') +
-  theme_classic()
+  theme_classic() +
+  facet_wrap(~Method)
 
 grid.arrange(pb1, pb2, nrow = 1)
 
-wilcox.test(data = bhv.count, sum_AGR ~ Sex)
-wilcox.test(data = bhv.count, sum_SUB ~ Sex)
+# porownanie plci z wideo
+# agresja
+
+wilcox.test(data = bhv.count_vid, sum_AGR ~ Sex)
+
+# uleglosc
+wilcox.test(data = bhv.count_vid, sum_SUB ~ Sex)
+
+# porownanie plci z real
+# agresja
+wilcox.test(data = bhv.count_real, sum_AGR ~ Sex)
+
+#uleglosc
+wilcox.test(data = bhv.count_real, sum_SUB ~ Sex)
+
+
+# porownanie wideo i real
+# agresja
+wilcox.test(data = bhv, sum_AGR ~ Method)
+
+#uleglosc
+wilcox.test(data = bhv, sum_SUB ~ Method)
 
 
 ```
@@ -82,31 +142,41 @@ wilcox.test(data = bhv.count, sum_SUB ~ Sex)
 
 # porownanie plci pod wzgledem aktow zjadania + korelacja z agresja
 
-
-pf1 <- bhv.count %>% ggplot(aes(x = Sex, y = FOOD)) +
+pf1 <- bhv %>% ggplot(aes(x = Sex, y = FOOD)) +
   geom_boxplot(aes(fill = Sex), outlier.shape = NA) +
-  coord_cartesian(ylim = c(0, 45)) +
+  coord_cartesian(ylim = c(0, 300)) +
   labs(y = 'Liczba aktów pobierania pokarmu', x = 'Płeć') +
-  theme_classic()
+  theme_classic() +
+  facet_wrap(~Method)
 
 
 
-pf2 <- bhv.count %>% ggplot(aes(x = sum_AGR, y = prop_FOOD)) +
+pf2 <- bhv %>% ggplot(aes(x = sum_AGR, y = prop_FOOD)) +
   geom_point(aes(color = Sex), size = 4, alpha = 0.7) +
   geom_smooth(method = 'lm', color = 'black', linewidth = 1.5) + 
-  ylim(0, 0.02) +
-  xlim(0, 0.004) +
   labs(y = 'Liczba aktów pobierania pokarmu', x = 'Suma zachowań agresywnych') +
-  theme_classic()
+  theme_classic() +
+  facet_wrap(~Method)
 
 
 grid.arrange(pf1, pf2, ncol = 2)
 
+# analiza dla wideo
+# porownanie plci
+wilcox.test(data = bhv.count_vid, FOOD ~ Sex)
+#korelacja
+cor.test(bhv.count_vid$FOOD, bhv.count_vid$sum_AGR, method = 'spearman')
 
-wilcox.test(data = bhv.count, FOOD ~ Sex)
+# analiza dla real
+#porownanie plci 
+wilcox.test(data = bhv.count_real, FOOD ~ Sex)
+#korelacja
+cor.test(bhv.count_real$FOOD, bhv.count_real$sum_AGR, method = 'spearman')
 
-cor.test(bhv.count$FOOD, bhv.count$sum_AGR,
-         method = 'spearman')
+# porownanie wideo i real
+
+wilcox.test(data = bhv, FOOD ~ Method)
+
 
 
 ```

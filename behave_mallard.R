@@ -8,7 +8,7 @@ library(gridExtra)
 
 # ustaw WD
 
-setwd("C:/Users/marta/OneDrive - University of Gdansk/Dydaktyka/Ekologia zwierz¹t/Animal-Ecology-Lab")
+setwd("C:/Users/marta/OneDrive - University of Gdansk/Dydaktyka/Ekologia zwierzÄ…t/Animal-Ecology-Lab")
 
 # wgraj i sprawdz dane
 
@@ -103,14 +103,14 @@ bhv <- bind_rows(bhv.count_vid, bhv.count_real)
 pb1 <- bhv %>% ggplot(aes(x = Sex, y = sum_AGR)) +
   geom_boxplot(aes(fill = Sex), outlier.shape = NA) +
   coord_cartesian(ylim = c(0, 3)) +
-  labs(y = 'Suma zachowañ agresywnych', x = 'P³eæ') +
+  labs(y = 'Suma zachowa? agresywnych', x = 'P?e?') +
   theme_classic() +
   facet_wrap(~Method)
 
 pb2 <- bhv %>% ggplot(aes(x = Sex, y = sum_SUB)) +
   geom_boxplot(aes(fill = Sex), outlier.shape = NA) +
   coord_cartesian(ylim = c(0, 3)) +
-  labs(y = 'Suma zachowañ uleg³ych', x = 'P³eæ') +
+  labs(y = 'Suma zachowa? uleg?ych', x = 'P?e?') +
   theme_classic() +
   facet_wrap(~Method)
 
@@ -139,7 +139,7 @@ wilcox.test(data = bhv, sum_SUB ~ Method)
 pf1 <- bhv %>% ggplot(aes(x = Sex, y = FOOD)) +
   geom_boxplot(aes(fill = Sex), outlier.shape = NA) +
   coord_cartesian(ylim = c(0, 300)) +
-  labs(y = 'Liczba aktów pobierania pokarmu', x = 'P³eæ') +
+  labs(y = 'Liczba akt?w pobierania pokarmu', x = 'P?e?') +
   theme_classic() +
   facet_wrap(~Method)
 
@@ -148,7 +148,7 @@ pf1 <- bhv %>% ggplot(aes(x = Sex, y = FOOD)) +
 pf2 <- bhv %>% ggplot(aes(x = sum_AGR, y = prop_FOOD)) +
   geom_point(aes(color = Sex), size = 4, alpha = 0.7) +
   geom_smooth(method = 'lm', color = 'black', linewidth = 1.5) + 
-  labs(y = 'Liczba aktów pobierania pokarmu', x = 'Suma zachowañ agresywnych') +
+  labs(y = 'Liczba akt?w pobierania pokarmu', x = 'Suma zachowa? agresywnych') +
   theme_classic() +
   facet_wrap(~Method)
 
